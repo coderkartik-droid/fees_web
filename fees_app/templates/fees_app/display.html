@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Fees List</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Admin icon styling */
+        .admin-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            color: #666;
+            text-decoration: none;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .admin-icon:hover {
+            color: #2196F3;
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        /* Search box styling */
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .search-container label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .search-container input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .search-container button {
+            background-color: #2196F3;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .search-container button:hover {
+            background-color: #0b7dda;
+        }
+        
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        thead {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            font-weight: bold;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        /* No results message */
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Upload icon in top-right corner - links to custom upload page -->
+        <!-- Checks authentication and staff/superuser status automatically -->
+        <!-- If not logged in: redirects to /admin/login/ -->
+        <!-- If logged in but not staff/superuser: redirects back to this page -->
+        <!-- If logged in and staff/superuser: shows upload page -->
+        <a href="{% url 'upload_excel' %}" class="admin-icon" title="Excel Upload">
+            ⚙️
+        </a>
+        
+        <h1>Student Fees List</h1>
+        
+        <!-- Search form -->
+        <form method="get" action="" class="search-container">
+            <label for="search">Search by Name:</label>
+            <input type="text" name="search" id="search" value="{{ search_query }}" placeholder="Enter student name...">
+            <button type="submit">Search</button>
+        </form>
+        
+        <!-- Student data table -->
+        {% if students %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Class</th>
+                        <th>Father's Name</th>
+                        <th>Fees Remaining</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.name }}</td>
+                            <td>{{ student.student_class }}</td>
+                            <td>{{ student.fathers_name }}</td>
+                            <td>₹{{ student.fees_remaining }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            <!-- Show number of results -->
+            <p style="margin-top: 15px; color: #666;">
+                Showing {{ students|length }} student(s)
+            </p>
+        {% else %}
+            <div class="no-results">
+                {% if search_query %}
+                    No students found matching "{{ search_query }}"
+                {% else %}
+                    No students in the database.
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>

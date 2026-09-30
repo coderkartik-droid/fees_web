@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excel Upload - Student Fees</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .upload-section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        input[type="file"] {
+            padding: 10px;
+            border: 2px dashed #ccc;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .file-list-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .file-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .file-date {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+        
+        .delete-btn:hover {
+            background-color: #d32f2f;
+        }
+        
+        .no-files {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .back-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .back-link a {
+            color: #2196F3;
+            text-decoration: none;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Excel Upload</h1>
+        
+        <!-- Upload section -->
+        <div class="upload-section">
+            <h2>Upload New File</h2>
+            
+            <!-- Form to upload Excel file -->
+            <form method="post" enctype="multipart/form-data" class="upload-form">
+                {% csrf_token %}  <!-- CSRF token for security -->
+                
+                <label for="excel_file">Choose File:</label>
+                <input type="file" name="excel_file" id="excel_file" accept=".xlsx" required>
+                
+                <button type="submit">Upload Excel</button>
+            </form>
+        </div>
+        
+        <!-- File list section -->
+        <div class="file-list-section">
+            <h2>Uploaded Files</h2>
+            
+            {% if uploaded_files %}
+                <ul class="file-list">
+                    {% for file in uploaded_files %}
+                        <li class="file-item">
+                            <div class="file-info">
+                                <div class="file-name">{{ file.filename }}</div>
+                                <div class="file-date">Uploaded: {{ file.uploaded_at|date:"Y-m-d H:i" }}</div>
+                            </div>
+                            <form method="post" action="{% url 'delete_file' file.id %}" style="display: inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="delete-btn" onclick="return confirm('Are you sure you want to delete this file and all its student records?')">Delete</button>
+                            </form>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="no-files">
+                    No files uploaded yet.
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Back to display page -->
+        <div class="back-link">
+            <a href="{% url 'display_students' %}">← Back to Student List</a>
+        </div>
+    </div>
+</body>
+</html>
